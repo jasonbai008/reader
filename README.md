@@ -38,12 +38,23 @@ rag-project/
 
 ## 部署关系
 
-```mermaid
-graph TD
-    A[GitHub] -->|rag-project 仓库| B[frontend/]
-    A -->|rag-project 仓库| C[backend/]
-    B -->|部署| D[Cloudflare Pages]
-    C -->|部署| E[Cloudflare Workers]
-    D -->|HTTPS API| F[RAG 后端]
-    E -->|HTTPS API| F
+```
+                GitHub
+                    │
+            rag-project 仓库
+                    │
+        ┌───────────┴───────────┐
+        │                       │
+        ▼                       ▼
+    frontend/                 backend/
+        │                       │
+        ▼                       ▼
+Cloudflare Pages          Cloudflare Workers
+        │                       │
+        └───────────┬───────────┘
+                    │
+                HTTPS API
+                    │
+                    ▼
+                RAG 后端
 ```
