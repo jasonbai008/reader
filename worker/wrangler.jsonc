@@ -1,0 +1,26 @@
+{
+  "name": "reader-worker",
+  "main": "src/index.js",
+  "compatibility_date": "2026-08-25",
+  // unpdf 依赖部分 Node 兼容 API，Workers 中解析 PDF 需要打开此开关。
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "EMBEDDING_MODEL": "gemini-embedding-001",
+    // Vectorize 当前最大 1536 维；768 是 Gemini 官方推荐的截断维度，检索质量损失很小。
+    "EMBEDDING_DIMENSIONS": "768"
+  },
+  "r2_buckets": [
+    {
+      "binding": "R2",
+      "bucket_name": "asset"
+    }
+  ],
+  "vectorize": [
+    {
+      "binding": "VECTORIZE",
+      "index_name": "rag-chunks",
+      // Vectorize 目前没有本地模拟。本地 wrangler dev 通过 remote binding 写入真实索引。
+      "remote": true
+    }
+  ]
+}
