@@ -124,18 +124,18 @@ async function onDelete(doc) {
         <button class="primary-btn" type="button" :disabled="uploading" @click="triggerUpload">
           {{ uploading ? '正在索引…' : '上传文件' }}
         </button>
-        <p class="hint">支持 TXT / Markdown / PDF，最大 4MB。</p>
+        <p class="hint">支持 TXT / Markdown / PDF，最大 4MB</p>
       </div>
 
       <section class="params">
         <label style="margin-top:0">
           <span>Chunk Size</span>
-          <p class="param-note">单个片段字符数，默认 800。</p>
+          <p class="param-note">单个片段字符数，默认 800</p>
           <input v-model.number="chunkSize" type="number" min="100" max="2000" step="50" />
         </label>
         <label>
           <span>Chunk Overlap</span>
-          <p class="param-note">相邻片段重叠字符数，默认 100。</p>
+          <p class="param-note">相邻片段重叠字符数，默认 100</p>
           <input v-model.number="chunkOverlap" type="number" min="0" :max="Math.max(chunkSize - 1, 0)" step="10" />
         </label>
       </section>
