@@ -13,6 +13,7 @@ Backend  → Cloudflare Workers
 
 ## 目录结构
 
+```
 rag-project/
 │
 ├── frontend/
@@ -33,6 +34,7 @@ rag-project/
 │   └── wrangler.toml
 │
 └── README.md
+```
 
 ## 部署关系
 
