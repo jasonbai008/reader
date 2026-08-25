@@ -11,27 +11,39 @@ backend/    RAG API 后端
 Frontend → Cloudflare Pages
 Backend  → Cloudflare Workers
 
+## Cloudflare
+
+R2 存储路径：https://asset.jasonbai.dpdns.org/rag/
+
 ## 目录结构
 
 ```
-rag-project/
+reader/
 │
-├── frontend/
-│   └── index.html
-│
-├── backend/
+├── worker/                  ← 后端 Worker
 │   ├── src/
-│   │   ├── index.js
-│   │   ├── rag.js
-│   │   ├── chunking.js
-│   │   ├── embedding.js
-│   │   ├── retrieval.js
-│   │   ├── vector-store.js
-│   │   ├── document-parser.js
-│   │   └── llm.js
+│   │   ├── index.js         ← Worker 入口
+│   │   ├── routes/
+│   │   │   ├── chat.js
+│   │   │   ├── upload.js
+│   │   │   └── search.js
+│   │   │
+│   │   ├── rag/
+│   │   │   ├── chunk.js
+│   │   │   ├── embed.js
+│   │   │   └── retrieve.js
+│   │   │
+│   │   └── utils/
 │   │
+│   ├── wrangler.jsonc
 │   ├── package.json
-│   └── wrangler.toml
+│   └── .dev.vars
+│
+├── frontend/                ← 前端 Pages
+│   ├── index.html
+│   └── style.css
+│
+├── prompts/                 ← 提示词文件
 │
 └── README.md
 ```
