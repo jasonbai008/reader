@@ -27,8 +27,16 @@ body {
   font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
   color: var(--text);
   background:
-    radial-gradient(1200px 500px at 10% -10%, rgba(76, 224, 200, 0.12), transparent 50%),
-    radial-gradient(900px 400px at 100% 0%, rgba(74, 168, 255, 0.14), transparent 46%),
+    radial-gradient(
+      1200px 500px at 10% -10%,
+      rgba(76, 224, 200, 0.12),
+      transparent 50%
+    ),
+    radial-gradient(
+      900px 400px at 100% 0%,
+      rgba(74, 168, 255, 0.14),
+      transparent 46%
+    ),
     linear-gradient(180deg, #0a1222 0%, var(--bg) 40%);
 }
 
@@ -94,7 +102,6 @@ textarea {
 
 .upload-box,
 .params,
-.selected-card,
 .placeholder-card {
   border: 1px solid var(--panel-border);
   border-radius: 16px;
@@ -103,8 +110,7 @@ textarea {
 }
 
 .upload-box,
-.params,
-.selected-card {
+.params {
   padding: 16px;
 }
 
@@ -137,7 +143,6 @@ textarea {
 
 .params h2,
 .file-list h2,
-.selected-card h2,
 .placeholder-card h2 {
   margin: 0 0 12px;
   font-size: 14px;
@@ -145,11 +150,26 @@ textarea {
 }
 
 .params label {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "label input"
+    "note input";
   align-items: center;
-  gap: 12px;
+  gap: 4px 12px;
   margin-top: 8px;
+}
+
+.params label > span {
+  grid-area: label;
+}
+
+.params label .param-note {
+  grid-area: note;
+}
+
+.params label input {
+  grid-area: input;
 }
 
 .params input {
@@ -162,7 +182,7 @@ textarea {
 }
 
 .param-note {
-  margin: 6px 0 10px;
+  margin: 0;
   font-size: 12px;
   line-height: 1.45;
 }
@@ -188,22 +208,18 @@ textarea {
   border: 1px solid var(--panel-border);
   border-radius: 14px;
   padding: 12px;
-  cursor: pointer;
   background: rgba(255, 255, 255, 0.015);
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 8px 12px;
 }
 
-.file-item.active {
-  border-color: rgba(76, 224, 200, 0.55);
-  box-shadow: inset 0 0 0 1px rgba(76, 224, 200, 0.2);
-}
-
 .file-main strong {
   display: block;
   margin-bottom: 6px;
-  word-break: break-all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .meta,
@@ -277,14 +293,11 @@ textarea {
   color: var(--danger);
   margin: 0;
   grid-column: 1 / -1;
+  word-break: break-all;
 }
 
 .empty {
   color: var(--muted);
-}
-
-.selected-card p {
-  margin: 0 0 6px;
 }
 
 .chat-head {

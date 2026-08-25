@@ -1,9 +1,8 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { deleteDocument, listDocuments, uploadDocument } from './api.js';
 
 const documents = ref([]);
-const selectedId = ref('');
 const uploading = ref(false);
 const deletingId = ref('');
 const loadError = ref('');
@@ -14,7 +13,6 @@ const chunkOverlap = ref(100);
 const fileInput = ref(null);
 
 const question = ref('');
-const selected = computed(() => documents.value.find((item) => item.documentId === selectedId.value) || null);
 
 const statusLabel = {
   waiting: '等待中',
@@ -40,9 +38,6 @@ async function refreshList() {
   loadError.value = '';
   const data = await listDocuments();
   documents.value = data.documents || [];
-  if (selectedId.value && !documents.value.some((item) => item.documentId === selectedId.value)) {
-    selectedId.value = documents.value[0]?.documentId || '';
-  }
 }
 
 onMounted(async () => {
@@ -72,7 +67,6 @@ async function onFileChange(event) {
       chunkOverlap: Number(chunkOverlap.value),
     });
     await refreshList();
-    selectedId.value = result.documentId;
     if (result.status === 'completed') {
       notice.value = `「${result.filename}」已完成索引，共 ${result.chunkCount} 个 Chunk。`;
     } else {
@@ -101,7 +95,6 @@ async function onDelete(doc) {
   loadError.value = '';
   try {
     await deleteDocument(doc.documentId);
-    if (selectedId.value === doc.documentId) selectedId.value = '';
     await refreshList();
     notice.value = `已删除「${doc.filename}」。`;
   } catch (err) {
@@ -109,10 +102,6 @@ async function onDelete(doc) {
   } finally {
     deletingId.value = '';
   }
-}
-
-function selectDocument(doc) {
-  selectedId.value = doc.documentId;
 }
 </script>
 
@@ -122,7 +111,6 @@ function selectDocument(doc) {
       <header class="panel-head">
         <p class="eyebrow">Knowledge Base</p>
         <h1>知识库</h1>
-        <p class="sub">上传文档，完成第一阶段索引流水线。</p>
       </header>
 
       <div class="upload-box">
@@ -140,17 +128,16 @@ function selectDocument(doc) {
       </div>
 
       <section class="params">
-        <h2>索引参数</h2>
-        <label>
+        <label style="margin-top:0">
           <span>Chunk Size</span>
+          <p class="param-note">单个片段字符数，默认 800。</p>
           <input v-model.number="chunkSize" type="number" min="100" max="2000" step="50" />
         </label>
-        <p class="param-note">每个片段大约包含多少字符。默认 800，兼顾语义完整和 Embedding 输入长度。</p>
         <label>
           <span>Chunk Overlap</span>
+          <p class="param-note">相邻片段重叠字符数，默认 100。</p>
           <input v-model.number="chunkOverlap" type="number" min="0" :max="Math.max(chunkSize - 1, 0)" step="10" />
         </label>
-        <p class="param-note">相邻片段重叠的字符数。默认 100，避免句子被切断后检索不到。</p>
       </section>
 
       <section class="file-list">
@@ -167,8 +154,7 @@ function selectDocument(doc) {
           <li
             v-for="doc in documents"
             :key="doc.documentId"
-            :class="['file-item', { active: doc.documentId === selectedId }]"
-            @click="selectDocument(doc)"
+            class="file-item"
           >
             <div class="file-main">
               <strong>{{ doc.filename }}</strong>
@@ -192,15 +178,6 @@ function selectDocument(doc) {
             <p v-if="doc.status === 'failed' && doc.error" class="item-error">{{ doc.error }}</p>
           </li>
         </ul>
-      </section>
-
-      <section v-if="selected" class="selected-card">
-        <h2>当前选中</h2>
-        <p>{{ selected.filename }}</p>
-        <p class="muted">{{ selected.documentId }}</p>
-        <p v-if="selected.status === 'completed'" class="muted">
-          已写入 {{ selected.vectorCount }} 条向量 · {{ selected.embeddingModel }} / {{ selected.embeddingDimensions }} 维
-        </p>
       </section>
     </aside>
 
