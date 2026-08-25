@@ -1,4 +1,4 @@
-const PREFIX = 'documents';
+const PREFIX = 'rag';
 
 export function originalObjectKey(documentId, filename) {
   return `${PREFIX}/${documentId}/${filename}`;
