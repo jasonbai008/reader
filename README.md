@@ -61,7 +61,7 @@ reader/
 │   ├── package.json
 │   └── vite.config.js
 │
-├── prompts/                 ← 提示词文件
+├── docs/                    ← 文档目录
 │
 └── README.md
 ```
