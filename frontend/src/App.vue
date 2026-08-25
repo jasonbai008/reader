@@ -214,7 +214,7 @@ function selectDocument(doc) {
       <div class="transcript">
         <div class="placeholder-card">
           <h2>等待知识库准备完成</h2>
-          <p>本阶段数据流：文件 → 解析 → 清洗 → Chunk → Gemini Embedding → Cloudflare Vectorize。</p>
+          <p>本阶段数据流：文件 → 解析 → 清洗 → Chunk → Cloudflare Workers AI Embedding → Cloudflare Vectorize。</p>
           <p>第二阶段才会把问题变成向量并检索 Top-K；第三阶段才会把检索结果交给 Gemini 生成回答。</p>
         </div>
       </div>

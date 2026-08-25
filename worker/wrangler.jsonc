@@ -5,9 +5,14 @@
   // unpdf 依赖部分 Node 兼容 API，Workers 中解析 PDF 需要打开此开关。
   "compatibility_flags": ["nodejs_compat"],
   "vars": {
-    "EMBEDDING_MODEL": "gemini-embedding-001",
-    // Vectorize 当前最大 1536 维；768 是 Gemini 官方推荐的截断维度，检索质量损失很小。
+    "EMBEDDING_MODEL": "@cf/baai/bge-base-en-v1.5",
+    // bge-base-en-v1.5 输出 768 维，与现有 Vectorize 索引维度一致。
     "EMBEDDING_DIMENSIONS": "768"
+  },
+  "ai": {
+    "binding": "AI",
+    // 与 Vectorize 一样走远程绑定，本地 wrangler dev 调用真实 Workers AI。
+    "remote": true
   },
   "r2_buckets": [
     {

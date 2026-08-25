@@ -33,7 +33,7 @@ reader/
 │   │   │
 │   │   ├── rag/
 │   │   │   ├── chunk.js     ← 文本切分
-│   │   │   ├── embed.js     ← Gemini Embedding
+│   │   │   ├── embed.js     ← Workers AI Embedding（@cf/baai/bge-base-en-v1.5）
 │   │   │   └── retrieve.js  ← 第二阶段占位
 │   │   │
 │   │   ├── services/
