@@ -149,7 +149,7 @@ async function onSearch() {
     <aside class="kb-panel">
       <header class="panel-head">
         <p class="eyebrow">Knowledge Base</p>
-        <h1>知识库</h1>
+        <!-- <h1>知识库</h1> -->
       </header>
 
       <div class="upload-box">
@@ -250,7 +250,7 @@ async function onSearch() {
     <main class="chat-panel">
       <header class="chat-head">
         <p class="eyebrow">RAG Chat</p>
-        <h1>AI 对话</h1>        
+        <!-- <h1>AI 对话</h1> -->
       </header>
 
       <div class="transcript">
@@ -258,11 +258,7 @@ async function onSearch() {
           v-if="!retrieval && !searchError && !searching"
           class="placeholder-card"
         >
-          <h2>检索结果</h2>
-          <p>
-            在下方输入问题并发送。本阶段展示 Query 与 Retrieved
-            Context，方便核对检索是否命中相关 Chunk。
-          </p>
+          <p class="placeholder-tip">← 请对左侧已上传的文档内容进行提问</p>
         </div>
 
         <p v-if="searching" class="notice">正在检索…</p>
@@ -310,7 +306,7 @@ async function onSearch() {
             v-model="question"
             rows="4"
             :disabled="searching"
-            placeholder="请对已上传的文档进行提问..."
+            placeholder="请输入您的问题..."
           />
           <button
             type="submit"
