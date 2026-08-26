@@ -16,6 +16,11 @@
     // 与 Vectorize 一样走远程绑定，本地 wrangler dev 调用真实 Workers AI。
     "remote": true
   },
+  // 把 console.log / console.error 写进 Cloudflare Dashboard → Worker → Observability。
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
   "r2_buckets": [
     {
       "binding": "R2",

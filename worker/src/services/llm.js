@@ -73,6 +73,9 @@ function extractText(payload) {
 
   const candidates = [
     message?.content,
+    // Qwen3 on Workers AI 常把可见回答放在 reasoning / reasoning_content，content 为 null。
+    message?.reasoning_content,
+    message?.reasoning,
     choice?.text,
     data?.response,
     data?.response_text,
