@@ -53,3 +53,19 @@ export async function deleteVectorsByIds(env, ids = []) {
 
   return { deleted };
 }
+
+export async function queryVectors(env, vector, { topK }) {
+  if (!env.VECTORIZE) {
+    const err = new Error('未绑定 Vectorize。请检查 wrangler.jsonc 中的 vectorize 配置。');
+    err.status = 500;
+    throw err;
+  }
+
+  const result = await env.VECTORIZE.query(vector, {
+    topK,
+    returnValues: false,
+    returnMetadata: 'all',
+  });
+
+  return result?.matches || [];
+}

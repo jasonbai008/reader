@@ -1,7 +1,7 @@
 # reader
 基于 Cloudflare Workers + Vue + Embedding + Vector Store + LLM 实现的个人 RAG 知识库。
 
-当前进度：第一阶段（文档索引）。问答与检索尚未启用。
+当前进度：第二阶段（向量检索）。问题用 Cloudflare Workers AI Embedding 向量化后检索 Top-K；Gemini 最终回答尚未启用。
 
 ## Project Structure
 
@@ -28,18 +28,18 @@ reader/
 │   │   ├── routes/
 │   │   │   ├── chat.js      ← 第三阶段占位
 │   │   │   ├── upload.js    ← 文档上传与索引流水线
-│   │   │   ├── search.js    ← 第二阶段占位
+│   │   │   ├── search.js    ← POST /api/search
 │   │   │   └── documents.js ← 文件列表 / 删除
 │   │   │
 │   │   ├── rag/
 │   │   │   ├── chunk.js     ← 文本切分
 │   │   │   ├── embed.js     ← Workers AI Embedding（@cf/baai/bge-base-en-v1.5）
-│   │   │   └── retrieve.js  ← 第二阶段占位
+│   │   │   └── retrieve.js  ← Query Embedding + Vectorize Top-K
 │   │   │
 │   │   ├── services/
 │   │   │   ├── storage.js   ← R2 原文件与文档元数据
 │   │   │   ├── parser.js    ← TXT / Markdown / PDF 解析
-│   │   │   └── vectorize.js ← Vectorize 写入与删除
+│   │   │   └── vectorize.js ← Vectorize 写入、删除与查询
 │   │   │
 │   │   └── utils/
 │   │       ├── response.js

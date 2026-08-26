@@ -16,7 +16,7 @@ export default {
     try {
       // 健康检查接口：返回服务状态
       if (pathname === '/api/health' && request.method === 'GET') {
-        return json({ ok: true, stage: 1, name: 'document-indexing' });
+        return json({ ok: true, stage: 2, name: 'vector-retrieval' });
       }
 
       // 上传文档接口：接收并索引新文档
@@ -37,7 +37,7 @@ export default {
 
       // 搜索接口：在已索引文档中进行语义搜索
       if (pathname === '/api/search' && request.method === 'POST') {
-        return await handleSearch();
+        return await handleSearch(request, env);
       }
 
       // 对话接口：基于文档内容进行 AI 问答

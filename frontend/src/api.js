@@ -26,6 +26,15 @@ export async function uploadDocument(file, { chunkSize, chunkOverlap }) {
   return parseResponse(res);
 }
 
+export async function searchChunks(query, topK) {
+  const res = await fetch(`${API_BASE}/api/search`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query, topK }),
+  });
+  return parseResponse(res);
+}
+
 export async function deleteDocument(documentId) {
   const res = await fetch(`${API_BASE}/api/documents/${encodeURIComponent(documentId)}`, {
     method: 'DELETE',

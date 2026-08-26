@@ -89,3 +89,25 @@ export function parseChunkParams(form) {
 
   return { chunkSize, chunkOverlap };
 }
+
+export const DEFAULT_TOP_K = 5;
+export const MIN_TOP_K = 1;
+export const MAX_TOP_K = 10;
+
+export function parseSearchBody(body) {
+  const query = typeof body?.query === 'string' ? body.query.trim() : '';
+  if (!query) {
+    const err = new Error('query 不能为空。');
+    err.status = 400;
+    throw err;
+  }
+
+  const topK = Number(body?.topK ?? DEFAULT_TOP_K);
+  if (!Number.isInteger(topK) || topK < MIN_TOP_K || topK > MAX_TOP_K) {
+    const err = new Error(`topK 必须是 ${MIN_TOP_K}–${MAX_TOP_K} 的整数。`);
+    err.status = 400;
+    throw err;
+  }
+
+  return { query, topK };
+}
