@@ -222,27 +222,23 @@ async function onSearch() {
 
         <ul>
           <li v-for="doc in documents" :key="doc.documentId" class="file-item">
-            <div class="file-main">
-              <strong>{{ doc.filename }}</strong>
-              <div class="meta">
-                <span>{{ fileType(doc) }}</span>
-                <span>{{ formatSize(doc.size) }}</span>
-                <span>{{ doc.chunkCount || 0 }} chunks</span>
-              </div>
-            </div>
-            <div class="file-side">
+            <strong :title="doc.filename">{{ doc.filename }}</strong>
+            <div class="meta">
+              <span>{{ fileType(doc) }}</span>
+              <span>{{ formatSize(doc.size) }}</span>
+              <span>{{ doc.chunkCount || 0 }} chunks</span>
               <span :class="['status', doc.status]">{{
                 statusLabel[doc.status] || doc.status
               }}</span>
-              <button
-                type="button"
-                class="ghost-btn"
-                :disabled="deletingId === doc.documentId"
-                @click.stop="onDelete(doc)"
-              >
-                删除
-              </button>
             </div>
+            <button
+              type="button"
+              class="ghost-btn"
+              :disabled="deletingId === doc.documentId"
+              @click.stop="onDelete(doc)"
+            >
+              删除
+            </button>
             <p v-if="doc.status === 'failed' && doc.error" class="item-error">
               {{ doc.error }}
             </p>
