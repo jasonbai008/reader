@@ -3,8 +3,8 @@ export const MAX_FILE_SIZE = 4 * 1024 * 1024;
 export const MAX_CHUNKS = 100;
 export const MIN_CHUNK_SIZE = 100;
 export const MAX_CHUNK_SIZE = 2000;
-export const DEFAULT_CHUNK_SIZE = 800;
-export const DEFAULT_CHUNK_OVERLAP = 100;
+export const DEFAULT_CHUNK_SIZE = 1200;
+export const DEFAULT_CHUNK_OVERLAP = 150;
 
 const MIME_BY_EXT = {
   txt: 'text/plain',

@@ -27,8 +27,8 @@ function showToast(message, type = "info") {
   }
 }
 
-const chunkSize = ref(800);
-const chunkOverlap = ref(100);
+const chunkSize = ref(1200);
+const chunkOverlap = ref(150);
 const topK = ref(3);
 const fileInput = ref(null);
 
@@ -147,6 +147,8 @@ async function onSearch() {
   const query = question.value.trim();
   if (!query || searching.value) return;
 
+  // 已捕获 query 到 lastQuery，立即清空输入框，方便用户继续追问。
+  question.value = "";
   searching.value = true;
   lastQuery.value = query;
   chatResult.value = null;
@@ -206,7 +208,7 @@ async function onSearch() {
       <section class="params">
         <label style="margin-top: 0">
           <span>Chunk Size</span>
-          <p class="param-note">单个片段字符数，默认 800</p>
+          <p class="param-note">单个片段字符数，默认 1200</p>
           <input
             v-model.number="chunkSize"
             type="number"
@@ -217,7 +219,7 @@ async function onSearch() {
         </label>
         <label>
           <span>Chunk Overlap</span>
-          <p class="param-note">相邻片段重叠字符数，默认 100</p>
+          <p class="param-note">相邻片段重叠字符数，默认 150</p>
           <input
             v-model.number="chunkOverlap"
             type="number"
@@ -314,7 +316,6 @@ async function onSearch() {
             class="sources"
           >
             <p class="eyebrow">Sources</p>
-            <h2>参考资料</h2>
             <ul>
               <li
                 v-for="(source, index) in chatResult.sources"
@@ -336,6 +337,7 @@ async function onSearch() {
             rows="4"
             :disabled="searching"
             placeholder="请输入您的问题..."
+            @keydown.enter.exact.prevent="onSearch"
           />
           <button
             type="submit"

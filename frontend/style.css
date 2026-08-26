@@ -201,7 +201,7 @@ select:focus {
 
 .params h2,
 .file-list h2 {
-  margin: 0 0 12px;
+  margin: 0;
   font-size: 14px;
   letter-spacing: 0.04em;
 }
