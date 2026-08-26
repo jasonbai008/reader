@@ -5,9 +5,9 @@
   // unpdf 依赖部分 Node 兼容 API，Workers 中解析 PDF 需要打开此开关。
   "compatibility_flags": ["nodejs_compat"],
   "vars": {
-    "EMBEDDING_MODEL": "@cf/baai/bge-base-en-v1.5",
-    // bge-base-en-v1.5 输出 768 维，与现有 Vectorize 索引维度一致。
-    "EMBEDDING_DIMENSIONS": "768"
+    "EMBEDDING_MODEL": "@cf/qwen/qwen3-embedding-0.6b",
+    // qwen3-embedding-0.6b 输出 1024 维，必须与 Vectorize 索引维度一致。
+    "EMBEDDING_DIMENSIONS": "1024"
   },
   "ai": {
     "binding": "AI",
@@ -23,7 +23,7 @@
   "vectorize": [
     {
       "binding": "VECTORIZE",
-      "index_name": "rag-chunks",
+      "index_name": "rag-chunks-qwen",
       // Vectorize 目前没有本地模拟。本地 wrangler dev 通过 remote binding 写入真实索引。
       "remote": true
     }

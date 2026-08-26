@@ -250,11 +250,7 @@ async function onSearch() {
     <main class="chat-panel">
       <header class="chat-head">
         <p class="eyebrow">RAG Chat</p>
-        <h1>AI 对话</h1>
-        <p class="stage-banner">
-          第二阶段只做向量检索，不调用 Gemini 生成最终回答。问题用 Cloudflare
-          Workers AI Embedding 向量化后检索 Top-K。
-        </p>
+        <h1>AI 对话</h1>        
       </header>
 
       <div class="transcript">

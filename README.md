@@ -33,7 +33,7 @@ reader/
 │   │   │
 │   │   ├── rag/
 │   │   │   ├── chunk.js     ← 文本切分
-│   │   │   ├── embed.js     ← Workers AI Embedding（@cf/baai/bge-base-en-v1.5）
+│   │   │   ├── embed.js     ← Workers AI Embedding（@cf/qwen/qwen3-embedding-0.6b）
 │   │   │   └── retrieve.js  ← Query Embedding + Vectorize Top-K
 │   │   │
 │   │   ├── services/

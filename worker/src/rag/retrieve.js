@@ -14,7 +14,7 @@ function mapMatch(match) {
 
 /**
  * query → Cloudflare Workers AI Embedding → Vectorize Top-K
- * 查询与文档使用同一模型（bge-base-en-v1.5），查询侧使用 RETRIEVAL_QUERY。
+ * 查询与文档使用同一模型（qwen3-embedding-0.6b），查询侧使用 RETRIEVAL_QUERY。
  */
 export async function retrieve(env, { query, topK }) {
   const [vector] = await embedTexts([query], env, 'RETRIEVAL_QUERY');

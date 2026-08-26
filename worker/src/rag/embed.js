@@ -1,9 +1,6 @@
-const DEFAULT_MODEL = '@cf/baai/bge-base-en-v1.5';
-const DEFAULT_DIMENSIONS = 768;
+const DEFAULT_MODEL = '@cf/qwen/qwen3-embedding-0.6b';
+const DEFAULT_DIMENSIONS = 1024;
 const BATCH_SIZE = 50;
-// Cloudflare 建议 cls pooling，准确度更好；文档与查询必须使用同一 pooling。
-const POOLING = 'cls';
-const QUERY_PREFIX = 'Represent this sentence for searching relevant passages: ';
 
 export function getEmbeddingConfig(env) {
   return {
@@ -30,18 +27,19 @@ function assertAiBinding(env) {
   }
 }
 
-function prepareTexts(texts, taskType) {
+function buildAiInput(texts, taskType) {
+  // Qwen3 Embedding：文档用 text；查询用 queries，走模型默认检索 instruction。
   if (taskType === 'RETRIEVAL_QUERY') {
-    return texts.map((text) => `${QUERY_PREFIX}${text}`);
+    return { queries: texts };
   }
-  return texts;
+  return { text: texts };
 }
 
 function extractErrorMessage(payload, fallback) {
   return payload?.error?.message || payload?.errors?.[0]?.message || fallback;
 }
 
-async function embedBatch(texts, env) {
+async function embedBatch(texts, env, taskType) {
   assertAiBinding(env);
   const { model, dimensions } = getEmbeddingConfig(env);
 
@@ -49,10 +47,7 @@ async function embedBatch(texts, env) {
   let timer;
   try {
     payload = await Promise.race([
-      env.AI.run(model, {
-        text: texts,
-        pooling: POOLING,
-      }),
+      env.AI.run(model, buildAiInput(texts, taskType)),
       new Promise((_, reject) => {
         timer = setTimeout(() => {
           const err = new Error('Workers AI Embedding 请求超时。');
@@ -101,11 +96,10 @@ async function embedBatch(texts, env) {
 export async function embedTexts(texts, env, taskType = 'RETRIEVAL_DOCUMENT') {
   if (!texts.length) return [];
 
-  const prepared = prepareTexts(texts, taskType);
   const vectors = [];
-  for (let i = 0; i < prepared.length; i += BATCH_SIZE) {
-    const slice = prepared.slice(i, i + BATCH_SIZE);
-    const batch = await embedBatch(slice, env);
+  for (let i = 0; i < texts.length; i += BATCH_SIZE) {
+    const slice = texts.slice(i, i + BATCH_SIZE);
+    const batch = await embedBatch(slice, env, taskType);
     vectors.push(...batch);
   }
   return vectors;
