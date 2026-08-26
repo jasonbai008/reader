@@ -1,11 +1,12 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import {
+  askChat,
   deleteDocument,
   listDocuments,
-  searchChunks,
   uploadDocument,
 } from "./api.js";
+import { renderMarkdown } from "./markdown.js";
 
 const documents = ref([]);
 const uploading = ref(false);
@@ -15,14 +16,14 @@ const notice = ref("");
 
 const chunkSize = ref(800);
 const chunkOverlap = ref(100);
-const topK = ref(5);
+const topK = ref(3);
 const fileInput = ref(null);
 
 const question = ref("");
 const searching = ref(false);
 const searchError = ref("");
 const lastQuery = ref("");
-const retrieval = ref(null);
+const chatResult = ref(null);
 
 const statusLabel = {
   waiting: "等待中",
@@ -132,12 +133,13 @@ async function onSearch() {
   searching.value = true;
   searchError.value = "";
   lastQuery.value = query;
+  chatResult.value = null;
 
   try {
-    retrieval.value = await searchChunks(query, Number(topK.value) || 5);
+    chatResult.value = await askChat(query, Number(topK.value) || 3);
   } catch (err) {
     searchError.value = err.message;
-    retrieval.value = null;
+    chatResult.value = null;
   } finally {
     searching.value = false;
   }
@@ -196,7 +198,7 @@ async function onSearch() {
         </label>
         <label>
           <span>Top K</span>
-          <p class="param-note">检索返回的片段数量，默认 5</p>
+          <p class="param-note">检索返回的片段数量，默认 3</p>
           <input
             v-model.number="topK"
             type="number"
@@ -255,48 +257,50 @@ async function onSearch() {
 
       <div class="transcript">
         <div
-          v-if="!retrieval && !searchError && !searching"
+          v-if="!chatResult && !searchError && !searching"
           class="placeholder-card"
         >
           <p class="placeholder-tip">← 请对左侧已上传的文档内容进行提问</p>
         </div>
 
-        <p v-if="searching" class="notice">正在检索…</p>
+        <p v-if="searching" class="notice">正在思考…</p>
         <p v-if="searchError" class="error">{{ searchError }}</p>
 
-        <section v-if="lastQuery || retrieval" class="retrieval">
+        <section v-if="lastQuery || chatResult" class="retrieval">
           <article class="query-card">
             <p class="eyebrow">Query</p>
             <h2>{{ lastQuery }}</h2>
-            <p v-if="retrieval" class="debug-line">
-              Embedding {{ retrieval.embeddingOk ? "成功" : "失败" }} · 请求
-              Top-K {{ retrieval.topK }} · 返回 {{ retrieval.resultCount }} 条
+            <p v-if="chatResult" class="debug-line">
+              Top-K {{ chatResult.topK }} · 参考
+              {{ chatResult.sources?.length || 0 }} 条
             </p>
           </article>
 
-          <div class="result-head">
-            <p class="eyebrow">Retrieved Context</p>
-            <h2>检索结果</h2>
-          </div>
+          <article v-if="chatResult?.answer" class="result-card answer-card">
+            <p class="eyebrow">Answer</p>
+            <div
+              class="answer-body"
+              v-html="renderMarkdown(chatResult.answer)"
+            ></div>
+          </article>
 
-          <p v-if="retrieval && !retrieval.results.length" class="empty">
-            没有检索到相关 Chunk。
-          </p>
-
-          <article
-            v-for="(item, index) in retrieval?.results || []"
-            :key="`${item.documentId}-${item.chunkIndex}-${index}`"
-            class="result-card"
+          <section
+            v-if="chatResult?.sources?.length"
+            class="sources"
           >
-            <header>
-              <strong>{{ item.filename || "未知文件" }}</strong>
-              <span>相似度 {{ formatScore(item.score) }}</span>
-            </header>
-            <p class="meta">
-              Chunk #{{ item.chunkIndex }} · {{ item.documentId }}
-            </p>
-            <p class="chunk-text">{{ item.text }}</p>
-          </article>
+            <p class="eyebrow">Sources</p>
+            <h2>参考资料</h2>
+            <ul>
+              <li
+                v-for="(source, index) in chatResult.sources"
+                :key="`${source.filename}-${source.chunkIndex}-${index}`"
+              >
+                <strong>{{ source.filename || "未知文件" }}</strong>
+                <span>Chunk #{{ source.chunkIndex }}</span>
+                <span>相似度 {{ formatScore(source.score) }}</span>
+              </li>
+            </ul>
+          </section>
         </section>
       </div>
 

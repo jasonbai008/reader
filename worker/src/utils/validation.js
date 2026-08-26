@@ -90,7 +90,7 @@ export function parseChunkParams(form) {
   return { chunkSize, chunkOverlap };
 }
 
-export const DEFAULT_TOP_K = 5;
+export const DEFAULT_TOP_K = 3;
 export const MIN_TOP_K = 1;
 export const MAX_TOP_K = 10;
 

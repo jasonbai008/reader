@@ -16,7 +16,7 @@ export default {
     try {
       // 健康检查接口：返回服务状态
       if (pathname === '/api/health' && request.method === 'GET') {
-        return json({ ok: true, stage: 2, name: 'vector-retrieval' });
+        return json({ ok: true, stage: 3, name: 'rag-chat' });
       }
 
       // 上传文档接口：接收并索引新文档
@@ -42,7 +42,7 @@ export default {
 
       // 对话接口：基于文档内容进行 AI 问答
       if (pathname === '/api/chat' && request.method === 'POST') {
-        return await handleChat();
+        return await handleChat(request, env);
       }
 
       return error('接口不存在。', 404);

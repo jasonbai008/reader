@@ -35,6 +35,15 @@ export async function searchChunks(query, topK) {
   return parseResponse(res);
 }
 
+export async function askChat(query, topK) {
+  const res = await fetch(`${API_BASE}/api/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query, topK }),
+  });
+  return parseResponse(res);
+}
+
 export async function deleteDocument(documentId) {
   const res = await fetch(`${API_BASE}/api/documents/${encodeURIComponent(documentId)}`, {
     method: 'DELETE',

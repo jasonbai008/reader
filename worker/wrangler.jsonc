@@ -7,7 +7,9 @@
   "vars": {
     "EMBEDDING_MODEL": "@cf/qwen/qwen3-embedding-0.6b",
     // qwen3-embedding-0.6b 输出 1024 维，必须与 Vectorize 索引维度一致。
-    "EMBEDDING_DIMENSIONS": "1024"
+    "EMBEDDING_DIMENSIONS": "1024",
+    // 中文 RAG 问答：Qwen3-30B-A3B（MoE，激活约 3B），与 Embedding 同属 Qwen 家族。
+    "CHAT_MODEL": "@cf/qwen/qwen3-30b-a3b-fp8"
   },
   "ai": {
     "binding": "AI",
