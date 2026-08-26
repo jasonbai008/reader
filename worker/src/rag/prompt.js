@@ -33,7 +33,8 @@ export function buildRagMessages({ query, context }) {
     { role: 'system', content: SYSTEM_PROMPT },
     {
       role: 'user',
-      content: `【知识库 Context】\n${context}\n\n【用户问题】\n${query}`,
+      // /no_think：关闭 Qwen3 默认 thinking，避免整段 token 都耗在 <think> 里导致 content 为空。
+      content: `/no_think\n【知识库 Context】\n${context}\n\n【用户问题】\n${query}`,
     },
   ];
 }

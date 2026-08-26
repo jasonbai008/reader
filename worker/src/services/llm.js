@@ -23,36 +23,67 @@ function extractErrorMessage(payload, fallback) {
   return payload?.error?.message || payload?.errors?.[0]?.message || fallback;
 }
 
-function collectText(value) {
-  if (typeof value === 'string') return value;
-  if (Array.isArray(value)) {
-    return value
-      .map((part) => {
-        if (typeof part === 'string') return part;
-        return part?.text || part?.content || '';
-      })
-      .join('');
+function unwrapPayload(payload) {
+  if (!payload || typeof payload !== 'object') return payload;
+  const inner = payload.result;
+  if (inner && typeof inner === 'object' && !Array.isArray(inner)) {
+    if (inner.choices || inner.response || inner.output || inner.output_text) {
+      return inner;
+    }
   }
-  if (value && typeof value === 'object') {
-    return value.text || value.content || '';
+  return payload;
+}
+
+function collectText(value, depth = 0) {
+  if (depth > 6 || value == null) return '';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number') return String(value);
+  if (Array.isArray(value)) {
+    return value.map((part) => collectText(part, depth + 1)).join('');
+  }
+  if (typeof value !== 'object') return '';
+
+  const direct = [value.output_text, value.text, value.response, value.response_text];
+  for (const item of direct) {
+    if (typeof item === 'string' && item.trim()) return item;
+  }
+
+  if (value.content != null) {
+    const nested = collectText(value.content, depth + 1);
+    if (nested.trim()) return nested;
   }
   return '';
 }
 
+function collectOutput(output) {
+  if (!Array.isArray(output)) return collectText(output);
+  return output
+    .filter((item) => {
+      const type = item?.type;
+      return type === 'message' || type === 'output_text' || item?.role === 'assistant' || item?.content;
+    })
+    .map((item) => collectText(item.content ?? item.text ?? item))
+    .join('');
+}
+
 function extractText(payload) {
-  const message = payload?.choices?.[0]?.message;
-  const fromMessage = collectText(message?.content);
-  if (fromMessage.trim()) return fromMessage;
+  const data = unwrapPayload(payload);
+  const choice = data?.choices?.[0];
+  const message = choice?.message || choice?.delta;
 
-  const fromResponse = collectText(payload?.response);
-  if (fromResponse.trim()) return fromResponse;
+  const candidates = [
+    message?.content,
+    choice?.text,
+    data?.response,
+    data?.response_text,
+    data?.output_text,
+    data?.output ? collectOutput(data.output) : '',
+  ];
 
-  const fromResult = collectText(payload?.result?.response);
-  if (fromResult.trim()) return fromResult;
-
-  const fromOutput = collectText(payload?.output_text);
-  if (fromOutput.trim()) return fromOutput;
-
+  for (const candidate of candidates) {
+    const text = collectText(candidate);
+    if (text.trim()) return text;
+  }
   return '';
 }
 
@@ -61,6 +92,15 @@ function stripThink(text) {
     .replace(/<think>[\s\S]*?<\/think>/gi, '')
     .replace(/^\s*<\/?think>\s*/gi, '')
     .trim();
+}
+
+function summarizePayload(payload) {
+  try {
+    const raw = JSON.stringify(payload);
+    return raw.length > 2000 ? `${raw.slice(0, 2000)}…` : raw;
+  } catch {
+    return Object.prototype.toString.call(payload);
+  }
 }
 
 /**
@@ -106,6 +146,7 @@ export async function generateChat(env, messages) {
 
   const answer = stripThink(extractText(payload));
   if (!answer) {
+    console.error('Workers AI 返回无法解析的结构:', summarizePayload(payload));
     const err = new Error('Workers AI 未返回可用的回答文本。');
     err.status = 502;
     throw err;

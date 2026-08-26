@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import {
   askChat,
   deleteDocument,
@@ -11,8 +11,21 @@ import { renderMarkdown } from "./markdown.js";
 const documents = ref([]);
 const uploading = ref(false);
 const deletingId = ref("");
-const loadError = ref("");
-const notice = ref("");
+const toast = ref(null);
+
+let toastTimer = 0;
+let toastSeq = 0;
+
+function showToast(message, type = "info") {
+  clearTimeout(toastTimer);
+  toast.value = { id: ++toastSeq, message, type };
+  // 进行中提示保持到下一次覆盖；成功 / 错误自动收起。
+  if (type !== "info") {
+    toastTimer = setTimeout(() => {
+      toast.value = null;
+    }, type === "error" ? 5000 : 3500);
+  }
+}
 
 const chunkSize = ref(800);
 const chunkOverlap = ref(100);
@@ -21,7 +34,6 @@ const fileInput = ref(null);
 
 const question = ref("");
 const searching = ref(false);
-const searchError = ref("");
 const lastQuery = ref("");
 const chatResult = ref(null);
 
@@ -48,7 +60,6 @@ function fileType(doc) {
 }
 
 async function refreshList() {
-  loadError.value = "";
   const data = await listDocuments();
   documents.value = data.documents || [];
 }
@@ -57,8 +68,12 @@ onMounted(async () => {
   try {
     await refreshList();
   } catch (err) {
-    loadError.value = err.message;
+    showToast(err.message, "error");
   }
+});
+
+onUnmounted(() => {
+  clearTimeout(toastTimer);
 });
 
 function triggerUpload() {
@@ -71,8 +86,10 @@ async function onFileChange(event) {
   if (!file) return;
 
   uploading.value = true;
-  loadError.value = "";
-  notice.value = `正在处理「${file.name}」：解析 → Chunk → Embedding → Vectorize`;
+  showToast(
+    `正在处理「${file.name}」：解析 → Chunk → Embedding → Vectorize`,
+    "info"
+  );
 
   try {
     const result = await uploadDocument(file, {
@@ -81,14 +98,15 @@ async function onFileChange(event) {
     });
     await refreshList();
     if (result.status === "completed") {
-      notice.value = `「${result.filename}」已完成索引，共 ${result.chunkCount} 个 Chunk。`;
+      showToast(
+        `「${result.filename}」已完成索引，共 ${result.chunkCount} 个 Chunk。`,
+        "success"
+      );
     } else {
-      loadError.value = result.error || "文档处理失败。";
-      notice.value = "";
+      showToast(result.error || "文档处理失败。", "error");
     }
   } catch (err) {
-    loadError.value = err.message;
-    notice.value = "";
+    showToast(err.message, "error");
     try {
       await refreshList();
     } catch {
@@ -109,13 +127,12 @@ async function onDelete(doc) {
   }
 
   deletingId.value = doc.documentId;
-  loadError.value = "";
   try {
     await deleteDocument(doc.documentId);
     await refreshList();
-    notice.value = `已删除「${doc.filename}」。`;
+    showToast(`已删除「${doc.filename}」。`, "success");
   } catch (err) {
-    loadError.value = err.message;
+    showToast(err.message, "error");
   } finally {
     deletingId.value = "";
   }
@@ -131,15 +148,16 @@ async function onSearch() {
   if (!query || searching.value) return;
 
   searching.value = true;
-  searchError.value = "";
   lastQuery.value = query;
   chatResult.value = null;
+  showToast("正在思考…", "info");
 
   try {
     chatResult.value = await askChat(query, Number(topK.value) || 3);
+    showToast("回答已生成。", "success");
   } catch (err) {
-    searchError.value = err.message;
     chatResult.value = null;
+    showToast(err.message, "error");
   } finally {
     searching.value = false;
   }
@@ -148,6 +166,18 @@ async function onSearch() {
 
 <template>
   <div class="app-shell">
+    <Teleport to="body">
+      <Transition name="toast">
+        <div
+          v-if="toast"
+          :key="toast.id"
+          :class="['toast', toast.type]"
+          role="status"
+        >
+          {{ toast.message }}
+        </div>
+      </Transition>
+    </Teleport>
     <aside class="kb-panel">
       <header class="panel-head">
         <p class="eyebrow">Knowledge Base</p>
@@ -216,8 +246,6 @@ async function onSearch() {
           <span>{{ documents.length }} 个文件</span>
         </div>
 
-        <p v-if="notice" class="notice">{{ notice }}</p>
-        <p v-if="loadError" class="error">{{ loadError }}</p>
         <p v-if="!documents.length && !uploading" class="empty">
           还没有文档。上传一个 TXT 开始验证索引流程。
         </p>
@@ -257,14 +285,11 @@ async function onSearch() {
 
       <div class="transcript">
         <div
-          v-if="!chatResult && !searchError && !searching"
+          v-if="!chatResult && !searching && !lastQuery"
           class="placeholder-card"
         >
           <p class="placeholder-tip">← 请对左侧已上传的文档内容进行提问</p>
         </div>
-
-        <p v-if="searching" class="notice">正在思考…</p>
-        <p v-if="searchError" class="error">{{ searchError }}</p>
 
         <section v-if="lastQuery || chatResult" class="retrieval">
           <article class="query-card">
