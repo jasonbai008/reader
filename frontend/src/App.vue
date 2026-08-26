@@ -21,9 +21,12 @@ function showToast(message, type = "info") {
   toast.value = { id: ++toastSeq, message, type };
   // 进行中提示保持到下一次覆盖；成功 / 错误自动收起。
   if (type !== "info") {
-    toastTimer = setTimeout(() => {
-      toast.value = null;
-    }, type === "error" ? 5000 : 3500);
+    toastTimer = setTimeout(
+      () => {
+        toast.value = null;
+      },
+      type === "error" ? 5000 : 3500,
+    );
   }
 }
 
@@ -88,7 +91,7 @@ async function onFileChange(event) {
   uploading.value = true;
   showToast(
     `正在处理「${file.name}」：解析 → Chunk → Embedding → Vectorize`,
-    "info"
+    "info",
   );
 
   try {
@@ -100,7 +103,7 @@ async function onFileChange(event) {
     if (result.status === "completed") {
       showToast(
         `「${result.filename}」已完成索引，共 ${result.chunkCount} 个 Chunk。`,
-        "success"
+        "success",
       );
     } else {
       showToast(result.error || "文档处理失败。", "error");
@@ -120,7 +123,7 @@ async function onFileChange(event) {
 async function onDelete(doc) {
   if (
     !confirm(
-      `确定删除「${doc.filename}」？将同时删除 R2 原文件和 Vectorize 中的向量。`
+      `确定删除「${doc.filename}」？将同时删除 R2 原文件和 Vectorize 中的向量。`,
     )
   ) {
     return;
@@ -290,7 +293,82 @@ async function onSearch() {
           v-if="!chatResult && !searching && !lastQuery"
           class="placeholder-card"
         >
-          <p class="placeholder-tip">← 请对左侧已上传的文档内容进行提问</p>
+          <!-- 空态：介绍 / 使用方法 / 开发者 / 技术栈，自上而下单列 -->
+          <div class="placeholder-content">
+            <p class="placeholder-intro">
+              一个基于 Cloudflare Workers 的个人 RAG 知识库问答应用
+            </p>
+
+            <section class="placeholder-section">
+              <h3 class="placeholder-title">使用方法</h3>
+              <ol class="usage-steps">
+                <li>
+                  <span class="step-label">Step 1</span>
+                  <span class="step-text"
+                    >在左侧上传 TXT / Markdown / PDF 文档并完成索引</span
+                  >
+                </li>
+                <li>
+                  <span class="step-label">Step 2</span>
+                  <span class="step-text"
+                    >在底部输入框对文档内容提问，Enter 或点击发送</span
+                  >
+                </li>
+              </ol>
+            </section>
+
+            <section class="placeholder-section">
+              <h3 class="placeholder-title">开发者</h3>
+              <ul class="tech-list">
+                <li>
+                  <span class="tech-label">作者</span>
+                  <span class="tech-value">Jason Bai</span>
+                </li>
+                <li>
+                  <span class="tech-label">系统设计</span>
+                  <span class="tech-value">gpt-5.6-sol</span>
+                </li>
+                <li>
+                  <span class="tech-label">编码辅助</span>
+                  <span class="tech-value">cursor-grok-4.6</span>
+                </li>
+              </ul>
+            </section>
+
+            <section class="placeholder-section">
+              <h3 class="placeholder-title">技术栈</h3>
+              <ul class="tech-list">
+                <li>
+                  <span class="tech-label">前端</span>
+                  <span class="tech-value">Vue 3.5</span>
+                </li>
+                <li>
+                  <span class="tech-label">后端</span>
+                  <span class="tech-value">Cloudflare Workers</span>
+                </li>
+                <li>
+                  <span class="tech-label">嵌入向量</span>
+                  <span class="tech-value">qwen3-embedding-0.6b</span>
+                </li>
+                <li>
+                  <span class="tech-label">向量库</span>
+                  <span class="tech-value">Cloudflare Vectorize</span>
+                </li>
+                <li>
+                  <span class="tech-label">大模型</span>
+                  <span class="tech-value">qwen3-30b-a3b-fp8</span>
+                </li>
+                <li>
+                  <span class="tech-label">对象存储</span>
+                  <span class="tech-value">Cloudflare R2</span>
+                </li>
+                <li>
+                  <span class="tech-label">PDF 解析</span>
+                  <span class="tech-value">unpdf</span>
+                </li>
+              </ul>
+            </section>
+          </div>
         </div>
 
         <section v-if="lastQuery || chatResult" class="retrieval">
@@ -311,10 +389,7 @@ async function onSearch() {
             ></div>
           </article>
 
-          <section
-            v-if="chatResult?.sources?.length"
-            class="sources"
-          >
+          <section v-if="chatResult?.sources?.length" class="sources">
             <p class="eyebrow">Sources</p>
             <ul>
               <li
