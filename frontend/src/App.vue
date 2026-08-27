@@ -295,11 +295,12 @@ async function onSearch() {
         >
           <!-- 空态：介绍 / 使用方法 / 开发者 / 技术栈，自上而下单列 -->
           <div class="placeholder-content">
-            <p class="placeholder-intro">
+            <!-- 空态三块：CSS 依次淡入 + 轻微上移 -->
+            <p class="placeholder-intro placeholder-reveal">
               一个基于 Cloudflare Workers 的个人 RAG 知识库问答应用
             </p>
 
-            <section class="placeholder-section">
+            <section class="placeholder-section placeholder-reveal">
               <h3 class="placeholder-title">使用方法</h3>
               <ol class="usage-steps">
                 <li>
@@ -317,8 +318,8 @@ async function onSearch() {
               </ol>
             </section>
 
-            <section class="placeholder-section">
-              <h3 class="placeholder-title">开发者</h3>
+            <section class="placeholder-section placeholder-reveal" style="width: 84%">
+              <h3 class="placeholder-title">项目信息</h3>
               <ul class="tech-list">
                 <li>
                   <span class="tech-label">作者</span>
@@ -333,10 +334,6 @@ async function onSearch() {
                   <span class="tech-value">cursor-grok-4.6</span>
                 </li>
               </ul>
-            </section>
-
-            <section class="placeholder-section">
-              <h3 class="placeholder-title">技术栈</h3>
               <ul class="tech-list">
                 <li>
                   <span class="tech-label">前端</span>
@@ -347,16 +344,16 @@ async function onSearch() {
                   <span class="tech-value">Cloudflare Workers</span>
                 </li>
                 <li>
-                  <span class="tech-label">嵌入向量</span>
+                  <span class="tech-label">问答模型</span>
+                  <span class="tech-value">qwen3-30b-a3b-fp8</span>
+                </li>
+                <li>
+                  <span class="tech-label">嵌入模型</span>
                   <span class="tech-value">qwen3-embedding-0.6b</span>
                 </li>
                 <li>
                   <span class="tech-label">向量库</span>
                   <span class="tech-value">Cloudflare Vectorize</span>
-                </li>
-                <li>
-                  <span class="tech-label">大模型</span>
-                  <span class="tech-value">qwen3-30b-a3b-fp8</span>
                 </li>
                 <li>
                   <span class="tech-label">对象存储</span>

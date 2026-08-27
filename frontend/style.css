@@ -506,6 +506,42 @@ select:focus {
   margin-top: 18px;
 }
 
+/* 空态三块：页面载入时自上而下依次显隐，并自下轻微上移 */
+@keyframes placeholder-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.placeholder-reveal {
+  opacity: 0;
+  animation: placeholder-reveal 0.55s ease-out forwards;
+}
+
+.placeholder-content > .placeholder-reveal:nth-child(1) {
+  animation-delay: 0.08s;
+}
+
+.placeholder-content > .placeholder-reveal:nth-child(2) {
+  animation-delay: 0.28s;
+}
+
+.placeholder-content > .placeholder-reveal:nth-child(3) {
+  animation-delay: 0.48s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .placeholder-reveal {
+    opacity: 1;
+    animation: none;
+  }
+}
+
 .placeholder-title {
   margin: 0 0 8px;
   font-size: 12px;
