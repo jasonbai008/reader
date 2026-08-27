@@ -683,15 +683,20 @@ select:focus {
 }
 
 .answer-body {
+  color: var(--text);
+  background: transparent;
   line-height: 1.75;
   word-break: break-word;
 }
 
 .answer-body h1,
 .answer-body h2,
-.answer-body h3 {
-  margin: 0.8em 0 0.4em;
+.answer-body h3,
+.answer-body h4 {
+  margin: 0.9em 0 0.45em;
+  color: var(--text);
   font-weight: 650;
+  background: transparent;
 }
 
 .answer-body h1 {
@@ -704,20 +709,58 @@ select:focus {
 
 .answer-body h3 {
   font-size: 16px;
+  color: var(--accent);
+}
+
+.answer-body h4 {
+  font-size: 15px;
 }
 
 .answer-body p,
-.answer-body ul {
-  margin: 0.4em 0;
+.answer-body ul,
+.answer-body ol {
+  margin: 0.5em 0;
+  color: var(--text);
+  background: transparent;
 }
 
-.answer-body ul {
+.answer-body ul,
+.answer-body ol {
   padding-left: 1.25em;
+}
+
+.answer-body li {
+  margin: 0.2em 0;
+}
+
+.answer-body blockquote {
+  margin: 0.7em 0;
+  padding: 10px 14px;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  color: var(--muted);
+  background: rgba(76, 224, 200, 0.08);
+  font-style: italic;
+}
+
+.answer-body blockquote p {
+  margin: 0.25em 0;
+  color: inherit;
+}
+
+.answer-body strong {
+  color: #fff;
+  font-weight: 650;
+}
+
+.answer-body a {
+  color: var(--accent-2);
 }
 
 .answer-body code {
   font-family: Consolas, "Courier New", monospace;
   font-size: 0.92em;
+  color: var(--accent-2);
   background: rgba(74, 168, 255, 0.12);
   padding: 0.1em 0.35em;
   border-radius: 4px;
@@ -733,6 +776,7 @@ select:focus {
 }
 
 .answer-body pre code {
+  color: var(--text);
   background: none;
   padding: 0;
 }
